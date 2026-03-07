@@ -1,0 +1,17 @@
+enum JsonWidgetTypes {
+  container,
+  row,
+  column,
+  stack,
+  sizedBox,
+  padding,
+  center,
+  align,
+  positioned,
+  icon,
+  text,
+  expanded,
+  singleChildScrollView,
+  backDropFilter,
+  clipRRect,
+}
