@@ -9,52 +9,18 @@ final class JsonWidget$Container extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final childJson = json['child'];
-
     return Container(
-      width: _double(json['width']),
-      height: _double(json['height']),
-      padding: _edgeInsets(json['padding']),
-      margin: _edgeInsets(json['margin']),
+      width: parseDouble(json['width']),
+      height: parseDouble(json['height']),
+      padding: parseEdgeInsets(json['padding']),
+      margin: parseEdgeInsets(json['margin']),
       alignment: _alignment(json['alignment']),
       decoration: _decoration(json),
       color: json.containsKey('decoration')
           ? null
-          : context.colors.getColorFromName(json['color'], _double(json['colorOpacity'])),
-      child: childJson is Map<String, dynamic>
-          ? JsonWidget.fromType(context: context, json: childJson, arguments: arguments)
-          : null,
+          : context.colors.getColorFromName(json['color'], parseDouble(json['colorOpacity'])),
+      child: childOrNull(json['child'], arguments: arguments),
     );
-  }
-
-  // --------------------------
-  // Parsing helpers
-  // --------------------------
-
-  double? _double(dynamic v) => v == null ? null : double.tryParse(v.toString());
-
-  EdgeInsets? _edgeInsets(dynamic v) {
-    if (v == null) return null;
-
-    if (v is num) {
-      return EdgeInsets.all(v.toDouble());
-    }
-
-    if (v is String) {
-      final parts = v.split(',').map((e) => double.parse(e.trim())).toList();
-
-      if (parts.length == 1) return EdgeInsets.all(parts[0]);
-
-      if (parts.length == 2) {
-        return EdgeInsets.symmetric(vertical: parts[0], horizontal: parts[1]);
-      }
-
-      if (parts.length == 4) {
-        return EdgeInsets.fromLTRB(parts[0], parts[1], parts[2], parts[3]);
-      }
-    }
-
-    return null;
   }
 
   Alignment? _alignment(dynamic value) {
@@ -83,19 +49,19 @@ final class JsonWidget$Container extends JsonWidget {
     if (dec is! Map<String, dynamic>) return null;
 
     return BoxDecoration(
-      color: context.colors.getColorFromName(dec['color'], _double(dec['colorOpacity'])),
+      color: context.colors.getColorFromName(dec['color'], parseDouble(dec['colorOpacity'])),
       borderRadius: dec['borderRadius'] != null
-          ? BorderRadius.circular(_double(dec['borderRadius']) ?? 0)
+          ? BorderRadius.circular(parseDouble(dec['borderRadius']) ?? 0)
           : null,
       border: dec['border'] is Map<String, dynamic>
           ? Border.all(
               color:
                   context.colors.getColorFromName(
                     dec['border']['color'],
-                    _double(dec['border']['colorOpacity']),
+                    parseDouble(dec['border']['colorOpacity']),
                   ) ??
                   Colors.black,
-              width: _double(dec['border']['width']) ?? 1.0,
+              width: parseDouble(dec['border']['width']) ?? 1.0,
             )
           : null,
       boxShadow: dec['boxShadow'] is List
@@ -104,11 +70,11 @@ final class JsonWidget$Container extends JsonWidget {
                 .map(
                   (m) => BoxShadow(
                     color:
-                        context.colors.getColorFromName(m['color'], _double(m['colorOpacity'])) ??
+                        context.colors.getColorFromName(m['color'], parseDouble(m['colorOpacity'])) ??
                         Colors.black,
-                    blurRadius: _double(m['blur']) ?? 0,
-                    spreadRadius: _double(m['spread']) ?? 0,
-                    offset: Offset(_double(m['dx']) ?? 0, _double(m['dy']) ?? 0),
+                    blurRadius: parseDouble(m['blur']) ?? 0,
+                    spreadRadius: parseDouble(m['spread']) ?? 0,
+                    offset: Offset(parseDouble(m['dx']) ?? 0, parseDouble(m['dy']) ?? 0),
                   ),
                 )
                 .toList()

@@ -7,20 +7,14 @@ final class JsonWidget$Positioned extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final childJson = json['child'];
-
     return Positioned(
-      left: _double(json['left']),
-      top: _double(json['top']),
-      right: _double(json['right']),
-      bottom: _double(json['bottom']),
-      width: _double(json['width']),
-      height: _double(json['height']),
-      child: childJson is Map<String, dynamic>
-          ? JsonWidget.fromType(context: context, json: childJson, arguments: arguments)
-          : const SizedBox.shrink(),
+      left: parseDouble(json['left']),
+      top: parseDouble(json['top']),
+      right: parseDouble(json['right']),
+      bottom: parseDouble(json['bottom']),
+      width: parseDouble(json['width']),
+      height: parseDouble(json['height']),
+      child: childOrEmpty(json['child'], arguments: arguments),
     );
   }
-
-  double? _double(dynamic v) => v == null ? null : double.tryParse(v.toString());
 }

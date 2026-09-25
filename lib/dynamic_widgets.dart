@@ -1,3 +1,5 @@
+import 'package:dynamic_widgets/dynamic_widgets_platform_interface.dart';
+
 export 'package:dynamic_widgets/colors/primitive_colors.dart';
 export 'package:dynamic_widgets/colors/light_colors.dart';
 export 'package:dynamic_widgets/colors/dark_colors.dart';
@@ -27,3 +29,11 @@ export 'package:dynamic_widgets/extensions/color_extension.dart';
 export 'package:dynamic_widgets/extensions/context_extension.dart';
 
 export 'package:dynamic_widgets/widgets/custom_image.dart';
+
+/// Entry point of the plugin.
+///
+/// Rendering is done with [JsonWidget.fromType]; this class only exposes the
+/// native platform channel.
+class DynamicWidgets {
+  Future<String?> getPlatformVersion() => DynamicWidgetsPlatform.instance.getPlatformVersion();
+}

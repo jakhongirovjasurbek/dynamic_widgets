@@ -29,9 +29,14 @@ abstract class JsonWidget {
     required Map<String, dynamic> json,
     List<InAppArgument>? arguments,
   }) {
-    if (json.isEmpty || json['type'] == null) return const SizedBox();
+    if (json.isEmpty || json['type'] == null) return const SizedBox.shrink();
 
-    return switch (JsonWidgetTypes.values.byName(json['type'])) {
+    final type = JsonWidgetTypes.values.asNameMap()[json['type'].toString()];
+
+    // Unknown type (for example a newer server schema): render nothing instead of crashing.
+    if (type == null) return const SizedBox.shrink();
+
+    return switch (type) {
       JsonWidgetTypes.container => JsonWidget$Container(
         context,
       ).fromJson(json, arguments: arguments),
@@ -61,13 +66,69 @@ abstract class JsonWidget {
     };
   }
 
-  double? fromIntToDouble(dynamic value) {
+  /// Parses a JSON value (num or numeric String) into a double.
+  /// Returns null when the value is missing or not numeric.
+  double? fromIntToDouble(dynamic value) => parseDouble(value);
+
+  double? parseDouble(dynamic value) {
     if (value == null) return null;
 
-    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
 
-    if (value is double) return value;
+    return double.tryParse(value.toString());
+  }
 
-    return value;
+  int? parseInt(dynamic value) {
+    if (value == null) return null;
+
+    if (value is int) return value;
+
+    if (value is num) return value.toInt();
+
+    return int.tryParse(value.toString());
+  }
+
+  /// Parses padding/margin.
+  ///
+  /// Accepts a number (`16`), or a String with 1, 2 or 4 comma separated
+  /// values: `"16"`, `"vertical,horizontal"`, `"left,top,right,bottom"`.
+  /// Returns null on any malformed input.
+  EdgeInsets? parseEdgeInsets(dynamic value) {
+    if (value == null) return null;
+
+    if (value is num) return EdgeInsets.all(value.toDouble());
+
+    if (value is! String) return null;
+
+    final parts = value.split(',').map((e) => double.tryParse(e.trim())).toList();
+
+    if (parts.any((e) => e == null)) return null;
+
+    return switch (parts.length) {
+      1 => EdgeInsets.all(parts[0]!),
+      2 => EdgeInsets.symmetric(vertical: parts[0]!, horizontal: parts[1]!),
+      4 => EdgeInsets.fromLTRB(parts[0]!, parts[1]!, parts[2]!, parts[3]!),
+      _ => null,
+    };
+  }
+
+  /// Builds a child widget when [childJson] is a JSON object, otherwise null.
+  Widget? childOrNull(dynamic childJson, {List<InAppArgument>? arguments}) =>
+      childJson is Map<String, dynamic>
+      ? JsonWidget.fromType(context: context, json: childJson, arguments: arguments)
+      : null;
+
+  /// Builds a child widget when [childJson] is a JSON object, otherwise an empty box.
+  Widget childOrEmpty(dynamic childJson, {List<InAppArgument>? arguments}) =>
+      childOrNull(childJson, arguments: arguments) ?? const SizedBox.shrink();
+
+  /// Builds every JSON object inside [list]; non-object entries are skipped.
+  List<Widget> childrenFrom(dynamic list, {List<InAppArgument>? arguments}) {
+    if (list is! List) return const [];
+
+    return list
+        .whereType<Map<String, dynamic>>()
+        .map((j) => JsonWidget.fromType(context: context, json: j, arguments: arguments))
+        .toList();
   }
 }

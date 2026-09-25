@@ -7,12 +7,8 @@ final class JsonWidget$Center extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final childJson = json['child'];
-
     return Center(
-      child: childJson is Map<String, dynamic>
-          ? JsonWidget.fromType(context: context, json: childJson, arguments: arguments)
-          : const SizedBox.shrink(),
+      child: childOrEmpty(json['child'], arguments: arguments),
     );
   }
 }

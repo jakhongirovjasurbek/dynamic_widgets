@@ -31,15 +31,35 @@ class CustomImage extends StatelessWidget {
 
   String get _vectorImageExtension => 'svg';
 
-  String get _extension => source.split('.').last.toLowerCase();
+  static final RegExp _dataUri = RegExp(
+    r'^data:image\/(bmp|gif|ico|jpg|jpeg|png|svg\+xml|webp|x-icon);base64,([A-Za-z0-9+/]+={0,2})$',
+  );
+
+  RegExpMatch? get _dataUriMatch => _dataUri.firstMatch(source);
+
+  /// File extension, or the mime subtype for a base64 data URI
+  /// (`data:image/svg+xml;base64,...` resolves to `svg`).
+  String get _extension {
+    final match = _dataUriMatch;
+
+    if (match != null) {
+      final mime = match.group(1)!.toLowerCase();
+      return mime == 'svg+xml' ? 'svg' : mime;
+    }
+
+    return source.split('.').last.toLowerCase();
+  }
+
+  /// Raw base64 payload of a data URI (prefix stripped), or empty.
+  String get _base64Payload => _dataUriMatch?.group(2) ?? '';
 
   ImageTypeEnum get _imageType {
-    if (source.startsWith('http')) {
+    if (_dataUriMatch != null) {
+      return ImageTypeEnum.memory;
+    } else if (source.startsWith('http')) {
       return ImageTypeEnum.network;
     } else if (source.startsWith('assets')) {
       return ImageTypeEnum.asset;
-    } else if (_isImageBase64(source)) {
-      return ImageTypeEnum.memory;
     } else {
       return ImageTypeEnum.file;
     }
@@ -84,7 +104,7 @@ class CustomImage extends StatelessWidget {
               : null,
         ),
         ImageTypeEnum.memory => Image.memory(
-          base64Decode(source),
+          base64Decode(_base64Payload),
           height: height,
           width: width,
           fit: fit,
@@ -124,7 +144,7 @@ class CustomImage extends StatelessWidget {
         ),
         ImageTypeEnum.file => const SizedBox.shrink(),
         ImageTypeEnum.memory => SvgPicture.memory(
-          base64Decode(source),
+          base64Decode(_base64Payload),
           height: height,
           width: width,
           fit: fit ?? BoxFit.contain,
@@ -139,14 +159,6 @@ class CustomImage extends StatelessWidget {
           ? SizedBox(height: height, width: width, child: errorWidget)
           : const SizedBox.shrink();
     }
-  }
-
-  bool _isImageBase64(String source) {
-    final regex = RegExp(
-      r'data:image\/[bmp,gif,ico,jpg,png,svg,webp,x\-icon,svg+xml]+;base64,[a-zA-Z0-9,+,/]+={0,2}',
-    );
-
-    return regex.hasMatch(source);
   }
 }
 

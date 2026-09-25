@@ -11,22 +11,8 @@ final class JsonWidget$Row extends JsonWidget {
     mainAxisAlignment: _mainAxis(json['mainAxisAlignment']),
     crossAxisAlignment: _crossAxis(json['crossAxisAlignment']),
     mainAxisSize: json['mainAxisSize'] == 'min' ? MainAxisSize.min : MainAxisSize.max,
-    children: _children(json, arguments: arguments),
+    children: childrenFrom(json['children'], arguments: arguments),
   );
-
-  List<Widget> _children(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final list = json['children'];
-
-    if (list is! List) return const [];
-
-    return list
-        .whereType<Map<String, dynamic>>()
-        .map(
-          (childJson) =>
-              JsonWidget.fromType(context: context, json: childJson, arguments: arguments),
-        )
-        .toList();
-  }
 
   MainAxisAlignment _mainAxis(dynamic v) {
     switch (v) {

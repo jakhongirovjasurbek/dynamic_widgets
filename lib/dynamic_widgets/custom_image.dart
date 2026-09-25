@@ -10,18 +10,11 @@ final class JsonWidget$CustomImage extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) => CustomImage(
-    source: json['source'],
+    source: json['source']?.toString() ?? '',
     height: fromIntToDouble(json['height']),
     width: fromIntToDouble(json['width']),
-    color: context.colors.getColorFromName(json['color'], _double(json['colorOpacity'])),
-    errorWidget: switch (json['errorWidget'] != null) {
-      true => JsonWidget.fromType(
-        context: context,
-        json: json['errorWidget'],
-        arguments: arguments,
-      ),
-      false => null,
-    },
+    color: context.colors.getColorFromName(json['color'], parseDouble(json['colorOpacity'])),
+    errorWidget: childOrNull(json['errorWidget'], arguments: arguments),
     fit: switch (json['fit']) {
       'contain' => BoxFit.contain,
       'fitWidth' => BoxFit.fitWidth,
@@ -41,18 +34,16 @@ final class JsonWidget$CustomImage extends JsonWidget {
       'colorBurn' => BlendMode.colorBurn,
       'colorDodge' => BlendMode.colorDodge,
       'darken' => BlendMode.darken,
-      'dst,' => BlendMode.dst,
+      'dst' => BlendMode.dst,
       'dstATop' => BlendMode.dstATop,
       'dstIn' => BlendMode.dstIn,
       'dstOut' => BlendMode.dstOut,
       'exclusion' => BlendMode.exclusion,
       'hardLight' => BlendMode.hardLight,
       'hue' => BlendMode.hue,
-      'lighten,' => BlendMode.lighten,
+      'lighten' => BlendMode.lighten,
       'luminosity' => BlendMode.luminosity,
       _ => null,
     },
   );
-
-  double? _double(dynamic v) => v == null ? null : double.tryParse(v.toString());
 }

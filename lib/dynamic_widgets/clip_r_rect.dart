@@ -8,10 +8,8 @@ final class JsonWidget$ClipRRect extends JsonWidget {
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) => ClipRRect(
     borderRadius: json['borderRadius'] != null
-        ? BorderRadius.circular(_double(json['borderRadius']) ?? 0)
+        ? BorderRadius.circular(parseDouble(json['borderRadius']) ?? 0)
         : BorderRadius.zero,
-    child: JsonWidget.fromType(context: context, json: json['child'], arguments: arguments),
+    child: childOrEmpty(json['child'], arguments: arguments),
   );
-
-  double? _double(dynamic v) => v == null ? null : double.tryParse(v.toString());
 }

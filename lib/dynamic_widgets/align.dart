@@ -8,7 +8,7 @@ final class JsonWidget$Align extends JsonWidget {
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) => Align(
     alignment: getAlignment(json['alignment']),
-    child: JsonWidget.fromType(context: context, json: json['child'], arguments: arguments),
+    child: childOrEmpty(json['child'], arguments: arguments),
   );
 
   Alignment getAlignment(dynamic json) {
@@ -30,8 +30,11 @@ final class JsonWidget$Align extends JsonWidget {
       };
     }
 
-    if (json is Map<String, double>) {
-      return Alignment(fromIntToDouble(json['x'])!, fromIntToDouble(json['y'])!);
+    if (json is Map) {
+      final x = parseDouble(json['x']);
+      final y = parseDouble(json['y']);
+
+      if (x != null && y != null) return Alignment(x, y);
     }
 
     return Alignment.center;

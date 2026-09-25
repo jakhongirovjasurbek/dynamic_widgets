@@ -89,19 +89,23 @@ Example UI configuration:
   "children": [
     {
       "type": "text",
-      "data": "Hello World"
+      "title": "Hello World"
     },
     {
       "type": "container",
       "padding": 16,
       "child": {
         "type": "text",
-        "data": "Dynamic UI"
+        "title": "Dynamic UI"
       }
     }
   ]
 }
 ```
+
+`text` reads its content from `title` (falls back to `value`, then `data`).
+
+Unknown `type` values render as an empty `SizedBox` instead of throwing.
 
 This JSON will render:
 
@@ -187,6 +191,23 @@ enum JsonWidgetTypes {
 JsonWidgetTypes.example =>
     JsonWidget$Example(context).fromJson(json),
 ```
+
+---
+
+# Visual Builder
+
+The example app is a desktop-style editor for this JSON: menu bar, a widget
+palette and document outline on the left (drag and drop), the live canvas in
+the middle rendered by the real `JsonWidget.fromType`, an inspector on the
+right, and a console at the bottom that shows actions and render errors.
+
+```bash
+cd example
+flutter run -d chrome     # or: flutter run -d macos
+```
+
+Source: `example/lib/builder/`. To expose a new JSON field in the GUI, add a
+`FieldSpec` to `example/lib/builder/schema.dart`.
 
 ---
 

@@ -8,7 +8,7 @@ final class JsonWidget$Stack extends JsonWidget {
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) => Stack(
     alignment: _alignment(json['alignment']),
-    children: _children(json, arguments: arguments),
+    children: childrenFrom(json['children'], arguments: arguments),
   );
 
   Alignment _alignment(dynamic v) {
@@ -24,19 +24,5 @@ final class JsonWidget$Stack extends JsonWidget {
       default:
         return Alignment.center;
     }
-  }
-
-  List<Widget> _children(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final raw = json['children'];
-
-    if (raw is! List) return const [];
-
-    return raw
-        .whereType<Map<String, dynamic>>()
-        .map(
-          (childJson) =>
-              JsonWidget.fromType(context: context, json: childJson, arguments: arguments),
-        )
-        .toList();
   }
 }

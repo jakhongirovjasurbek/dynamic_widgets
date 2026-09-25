@@ -7,7 +7,18 @@ final class JsonWidget$Column extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final argument = arguments?.firstWhere((item) => item.widgetId == json['widget_id']);
+    final widgetId = json['widget_id'];
+
+    InAppArgument? argument;
+
+    if (widgetId != null && arguments != null) {
+      for (final item in arguments) {
+        if (item.widgetId == widgetId) {
+          argument = item;
+          break;
+        }
+      }
+    }
 
     return Column(
       spacing: fromIntToDouble(json['spacing']) ?? 0.0,
@@ -15,24 +26,10 @@ final class JsonWidget$Column extends JsonWidget {
       crossAxisAlignment: _crossAxis(json['crossAxisAlignment']),
       mainAxisSize: json['mainAxisSize'] == 'min' ? MainAxisSize.min : MainAxisSize.max,
       children: [
-        ..._children(json, arguments: arguments),
-        if (argument?.child != null) argument!.child,
+        ...childrenFrom(json['children'], arguments: arguments),
+        if (argument != null) argument.child,
       ],
     );
-  }
-
-  List<Widget> _children(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final list = json['children'];
-
-    if (list is! List) return const [];
-
-    return list
-        .whereType<Map<String, dynamic>>()
-        .map(
-          (childJson) =>
-              JsonWidget.fromType(context: context, json: childJson, arguments: arguments),
-        )
-        .toList();
   }
 
   MainAxisAlignment _mainAxis(dynamic v) {

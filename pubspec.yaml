@@ -1,5 +1,5 @@
 name: dynamic_widgets
-description: "A new Flutter plugin project."
+description: "Server-driven UI for Flutter: build widget trees from JSON at runtime."
 version: 0.0.1
 homepage:
 

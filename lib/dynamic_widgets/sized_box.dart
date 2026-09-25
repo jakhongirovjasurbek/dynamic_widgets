@@ -7,16 +7,10 @@ final class JsonWidget$SizedBox extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final childJson = json['child'];
-
     return SizedBox(
-      width: _double(json['width']),
-      height: _double(json['height']),
-      child: childJson is Map<String, dynamic>
-          ? JsonWidget.fromType(context: context, json: childJson, arguments: arguments)
-          : null,
+      width: parseDouble(json['width']),
+      height: parseDouble(json['height']),
+      child: childOrNull(json['child'], arguments: arguments),
     );
   }
-
-  double? _double(dynamic v) => v == null ? null : double.tryParse(v.toString());
 }

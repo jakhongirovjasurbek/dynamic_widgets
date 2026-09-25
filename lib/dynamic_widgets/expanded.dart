@@ -7,15 +7,9 @@ final class JsonWidget$Expanded extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) {
-    final childJson = json['child'];
-
     return Expanded(
-      flex: _int(json['flex']) ?? 1,
-      child: childJson is Map<String, dynamic>
-          ? JsonWidget.fromType(context: context, json: childJson, arguments: arguments)
-          : const SizedBox.shrink(),
+      flex: parseInt(json['flex']) ?? 1,
+      child: childOrEmpty(json['child'], arguments: arguments),
     );
   }
-
-  int? _int(dynamic v) => v == null ? null : int.tryParse(v.toString());
 }

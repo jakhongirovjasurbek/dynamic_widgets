@@ -9,22 +9,17 @@ final class JsonWidget$Text extends JsonWidget {
 
   @override
   Widget fromJson(Map<String, dynamic> json, {List<InAppArgument>? arguments}) => Text(
-    switch (json['title'] == null) {
-      true => json['value']?.toString() ?? '',
-      false => json['title'],
-    },
+    (json['title'] ?? json['value'] ?? json['data'])?.toString() ?? '',
     textAlign: _textAlign(json['textAlign']),
-    maxLines: json['maxLines'],
+    maxLines: parseInt(json['maxLines']),
     overflow: _overflow(json['overflow']),
     style: TextStyle(
-      height: _double(json['height']),
-      fontSize: _double(json['size']),
-      color: context.colors.getColorFromName(json['color'], _double(json['colorOpacity'])),
+      height: parseDouble(json['height']),
+      fontSize: parseDouble(json['size']),
+      color: context.colors.getColorFromName(json['color'], parseDouble(json['colorOpacity'])),
       fontWeight: weight(json['fontWeight']),
     ),
   );
-
-  double? _double(dynamic v) => v == null ? null : double.tryParse(v.toString());
 
   FontWeight? weight(dynamic v) {
     if (v == null) return null;
@@ -35,7 +30,7 @@ final class JsonWidget$Text extends JsonWidget {
       case 'w200':
         return FontWeight.w200;
       case 'w300':
-        return FontWeight.w400;
+        return FontWeight.w300;
       case 'w400':
         return FontWeight.w400;
       case 'w500':
